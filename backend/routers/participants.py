@@ -23,9 +23,17 @@ def join_meeting(
     if meeting is None:
         raise HTTPException(status_code=404, detail="Meeting not found")
 
-    participant = participant_crud.add_participant(
-        db, meeting=meeting, display_name=payload.display_name, is_host=False
+    # If this display_name matches the pre-registered host, reuse that record
+    # instead of creating a new duplicate with is_host=False.
+    existing_host = participant_crud.get_host_by_name(
+        db, meeting=meeting, display_name=payload.display_name
     )
+    if existing_host:
+        participant = existing_host
+    else:
+        participant = participant_crud.add_participant(
+            db, meeting=meeting, display_name=payload.display_name, is_host=False
+        )
     return schemas.JoinMeetingResponse(
         meeting=meeting_crud.to_meeting_out(meeting),
         participant=participant,

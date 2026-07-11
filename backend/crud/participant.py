@@ -26,6 +26,21 @@ def list_for_meeting(db: Session, meeting: models.Meeting) -> List[models.Partic
     )
 
 
+def get_host_by_name(
+    db: Session, meeting: models.Meeting, display_name: str
+) -> models.Participant | None:
+    """Return the host participant record if display_name matches the meeting host, else None."""
+    return (
+        db.query(models.Participant)
+        .filter(
+            models.Participant.meeting_id == meeting.id,
+            models.Participant.display_name == display_name,
+            models.Participant.is_host == True,  # noqa: E712
+        )
+        .first()
+    )
+
+
 def is_meeting_host(db: Session, meeting: models.Meeting, participant_id: str) -> bool:
     """True only if participant_id belongs to a participant of THIS meeting who is host."""
     participant = (
