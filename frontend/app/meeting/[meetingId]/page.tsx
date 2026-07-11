@@ -133,12 +133,13 @@ function TBtn({ icon, label, onClick, danger, active, withCaret, disabled }: { i
 
 /* ─── Participants Panel ───────────────────────────────────── */
 function ParticipantsPanel({
-  participants, loading, meetingId, isHost, onClose, onMutedAll, onRemoved,
+  participants, loading, meetingId, isHost, currentUser, onClose, onMutedAll, onRemoved,
 }: {
   participants: Participant[];
   loading: boolean;
   meetingId: string;
   isHost: boolean;
+  currentUser: string;
   onClose: () => void;
   onMutedAll: () => void;
   onRemoved: (id: string) => void;
@@ -220,8 +221,8 @@ function ParticipantsPanel({
                 </p>
                 {p.is_muted && <p style={{ margin: 0, fontSize: 11, color: "#e5484d" }}>Muted</p>}
               </div>
-              {/* Remove Participant (Host Only) */}
-              {isHost && (
+              {/* Remove Participant (Host Only, can't remove self) */}
+              {isHost && p.display_name !== currentUser && (
                 <button
                   onClick={() => handleRemove(p)}
                   title="Remove participant"
@@ -242,10 +243,11 @@ function ParticipantsPanel({
 
 /* ─── Host Tools Panel ─────────────────────────────────────── */
 function HostToolsPanel({
-  meetingId, participants, onClose, onMutedAll, onRemoved,
+  meetingId, participants, currentUser, onClose, onMutedAll, onRemoved,
 }: {
   meetingId: string;
   participants: Participant[];
+  currentUser: string;
   onClose: () => void;
   onMutedAll: () => void;
   onRemoved: (id: string) => void;
@@ -374,7 +376,7 @@ function HostToolsPanel({
                 <p style={{ margin: 0, fontSize: 13, color: "#fff" }}>{p.display_name}{p.is_host ? " ★" : ""}</p>
                 {p.is_muted && <p style={{ margin: 0, fontSize: 10, color: "#e5484d" }}>Muted</p>}
               </div>
-              {!p.is_host && (
+              {p.display_name !== currentUser && (
                 <button
                   onClick={() => handleRemove(p)}
                   title="Remove"
@@ -410,9 +412,15 @@ function MeetingRoom({ meeting, joinedName }: { meeting: Meeting; joinedName: st
     try {
       const list = await getMeetingParticipants(meeting.meeting_id);
       setParticipants(list);
+      
+      // If we successfully fetched the list, and our name is no longer in it, we were kicked out by the host!
+      if (list.length > 0 && !list.some(p => p.display_name === joinedName)) {
+        toast.error("You were removed by the host.");
+        router.push("/");
+      }
     } catch { /* ignore */ }
     finally { setParticipantsLoading(false); }
-  }, [meeting.meeting_id]);
+  }, [meeting.meeting_id, joinedName, router]);
 
   useEffect(() => {
     fetchParticipants();
@@ -494,6 +502,7 @@ function MeetingRoom({ meeting, joinedName }: { meeting: Meeting; joinedName: st
             loading={participantsLoading}
             meetingId={meeting.meeting_id}
             isHost={isHost}
+            currentUser={joinedName}
             onClose={() => setShowParticipants(false)}
             onMutedAll={fetchParticipants}
             onRemoved={(id) => setParticipants(ps => ps.filter(p => p.id !== id))}
@@ -507,6 +516,7 @@ function MeetingRoom({ meeting, joinedName }: { meeting: Meeting; joinedName: st
           <HostToolsPanel
             meetingId={meeting.meeting_id}
             participants={participants}
+            currentUser={joinedName}
             onClose={() => setShowHostTools(false)}
             onMutedAll={fetchParticipants}
             onRemoved={(id) => setParticipants(ps => ps.filter(p => p.id !== id))}
