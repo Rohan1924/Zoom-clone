@@ -3,8 +3,8 @@
 A full-stack, pixel-perfect clone of the Zoom web application, featuring instant meetings, scheduling, host controls, and guest authentication. Built as a Single Page Application (SPA) with Next.js and powered by a FastAPI backend using a SQLite database.
 
 ## 🚀 Live Demo
-- **Frontend (Vercel)**: *(https://zoom-clone-rohan-sc.vercel.app/)*
-- **Backend (Render)**: *(https://zoom-clone-nqi2.onrender.com)*
+- **Frontend (Vercel)**: [https://zoom-clone-rohan-sc.vercel.app/](https://zoom-clone-rohan-sc.vercel.app/)
+- **Backend (Render)**: [https://zoom-clone-nqi2.onrender.com](https://zoom-clone-nqi2.onrender.com)
 
 ---
 
