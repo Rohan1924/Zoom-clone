@@ -133,11 +133,12 @@ function TBtn({ icon, label, onClick, danger, active, withCaret, disabled }: { i
 
 /* ─── Participants Panel ───────────────────────────────────── */
 function ParticipantsPanel({
-  participants, loading, meetingId, onClose, onMutedAll, onRemoved,
+  participants, loading, meetingId, isHost, onClose, onMutedAll, onRemoved,
 }: {
   participants: Participant[];
   loading: boolean;
   meetingId: string;
+  isHost: boolean;
   onClose: () => void;
   onMutedAll: () => void;
   onRemoved: (id: string) => void;
@@ -179,23 +180,25 @@ function ParticipantsPanel({
         <button onClick={onClose} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 18, lineHeight: 1 }}>×</button>
       </div>
 
-      {/* Mute All */}
-      <div style={{ padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-        <button
-          onClick={handleMuteAll}
-          disabled={muteLoading}
-          style={{
-            width: "100%", padding: "8px 0", borderRadius: 6,
-            background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)",
-            color: "#fff", fontSize: 13, fontWeight: 500, cursor: muteLoading ? "not-allowed" : "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-            fontFamily: "var(--font-sans)",
-          }}
-        >
-          <VolumeX size={14} />
-          {muteLoading ? "Muting…" : "Mute All"}
-        </button>
-      </div>
+      {/* Mute All (Host Only) */}
+      {isHost && (
+        <div style={{ padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <button
+            onClick={handleMuteAll}
+            disabled={muteLoading}
+            style={{
+              width: "100%", padding: "8px 0", borderRadius: 6,
+              background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)",
+              color: "#fff", fontSize: 13, fontWeight: 500, cursor: muteLoading ? "not-allowed" : "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+              fontFamily: "var(--font-sans)",
+            }}
+          >
+            <VolumeX size={14} />
+            {muteLoading ? "Muting…" : "Mute All"}
+          </button>
+        </div>
+      )}
 
       {/* List */}
       <div style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
@@ -217,7 +220,8 @@ function ParticipantsPanel({
                 </p>
                 {p.is_muted && <p style={{ margin: 0, fontSize: 11, color: "#e5484d" }}>Muted</p>}
               </div>
-              {!p.is_host && (
+              {/* Remove Participant (Host Only) */}
+              {isHost && (
                 <button
                   onClick={() => handleRemove(p)}
                   title="Remove participant"
@@ -489,6 +493,7 @@ function MeetingRoom({ meeting, joinedName }: { meeting: Meeting; joinedName: st
             participants={participants}
             loading={participantsLoading}
             meetingId={meeting.meeting_id}
+            isHost={isHost}
             onClose={() => setShowParticipants(false)}
             onMutedAll={fetchParticipants}
             onRemoved={(id) => setParticipants(ps => ps.filter(p => p.id !== id))}
