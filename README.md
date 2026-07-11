@@ -23,6 +23,7 @@ A full-stack, pixel-perfect clone of the Zoom web application, featuring instant
 - **Database**: SQLite
 - **ORM**: SQLAlchemy
 - **Schema Management**: Auto-generation via SQLAlchemy `Base.metadata.create_all()`
+- **API Documentation**: Auto-generated Swagger UI available at `/docs` (e.g., `https://[your-render-url]/docs`)
 
 ---
 
