@@ -398,10 +398,11 @@ function HostToolsPanel({
 /* ─── Meeting Room ──────────────────────────────────────────────── */
 function MeetingRoom({ meeting, joinedName }: { meeting: Meeting; joinedName: string }) {
   const router = useRouter();
-  const { hostedMeetings } = useStore();
-  const isHost = hostedMeetings.includes(meeting.meeting_id);
   const { stream, videoRef, micOn, cameraOn, toggleMic, toggleCamera, isLoading } = useWebcam();
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const currentUserData = participants.find(p => p.display_name === joinedName);
+  const isHost = currentUserData?.is_host ?? false;
+
   const [participantsLoading, setParticipantsLoading] = useState(true);
   const [showParticipants, setShowParticipants] = useState(false);
   const [showHostTools, setShowHostTools] = useState(false);
