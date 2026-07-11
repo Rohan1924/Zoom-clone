@@ -14,7 +14,7 @@ interface Props {
 
 export default function NewMeetingModal({ open, onClose }: Props) {
   const router = useRouter();
-  const { displayName, setDisplayName } = useStore();
+  const { displayName, setDisplayName, addHostedMeeting } = useStore();
   const [name, setName] = useState(displayName || "");
   const [loading, setLoading] = useState(false);
 
@@ -75,6 +75,7 @@ export default function NewMeetingModal({ open, onClose }: Props) {
     stream?.getTracks().forEach((t) => t.stop());
     try {
       const meeting = await createInstantMeeting({ title: "Instant Meeting", host_name: trimmed });
+      addHostedMeeting(meeting.meeting_id);
       onClose();
       router.push(`/meeting/${meeting.meeting_id}`);
     } catch {

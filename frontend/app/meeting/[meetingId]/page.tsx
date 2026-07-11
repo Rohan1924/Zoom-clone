@@ -392,6 +392,8 @@ function HostToolsPanel({
 /* ─── Meeting Room ──────────────────────────────────────────────── */
 function MeetingRoom({ meeting, joinedName }: { meeting: Meeting; joinedName: string }) {
   const router = useRouter();
+  const { hostedMeetings } = useStore();
+  const isHost = hostedMeetings.includes(meeting.meeting_id);
   const { stream, videoRef, micOn, cameraOn, toggleMic, toggleCamera, isLoading } = useWebcam();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [participantsLoading, setParticipantsLoading] = useState(true);
@@ -575,7 +577,9 @@ function MeetingRoom({ meeting, joinedName }: { meeting: Meeting; joinedName: st
           <TBtn icon={<MessageSquare size={20} />} label="Chat" withCaret />
           <TBtn icon={<SmilePlus size={20} />} label="React" withCaret />
           <TBtn icon={<MonitorUp size={20} />} label="Share" withCaret />
-          <TBtn icon={<Wrench size={20} />} label="Host tools" withCaret onClick={() => { setShowHostTools(p => !p); setShowParticipants(false); }} />
+          {isHost && (
+            <TBtn icon={<Wrench size={20} />} label="Host tools" withCaret onClick={() => { setShowHostTools(p => !p); setShowParticipants(false); }} />
+          )}
           <TBtn icon={<MoreHorizontal size={20} />} label="More" withCaret />
         </div>
 

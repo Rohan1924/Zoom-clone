@@ -18,6 +18,10 @@ interface AppState {
   recentMeetings: Meeting[];
   meetingsLoading: boolean;
   fetchMeetings: () => Promise<void>;
+
+  // ── Host Tracking ─────────────────────────────────────────────
+  hostedMeetings: string[];
+  addHostedMeeting: (meetingId: string) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -62,17 +66,20 @@ export const useStore = create<AppState>()(
       fetchMeetings: async () => {
         set({ meetingsLoading: true });
         try {
-          const [upcoming, recent] = await Promise.all([
-            getUpcomingMeetings(),
-            getRecentMeetings(),
-          ]);
-          set({ upcomingMeetings: upcoming, recentMeetings: recent });
+          const [u, r] = await Promise.all([getUpcomingMeetings(), getRecentMeetings()]);
+          set({ upcomingMeetings: u, recentMeetings: r });
         } catch {
-          // silently fail — the UI shows empty states
+          // ignore error for now
         } finally {
           set({ meetingsLoading: false });
         }
       },
+
+      hostedMeetings: [],
+      addHostedMeeting: (meetingId) =>
+        set((state) => ({
+          hostedMeetings: [...state.hostedMeetings, meetingId],
+        })),
     }),
     {
       name: "zoomclone-storage",

@@ -39,7 +39,7 @@ function addMinutes(time: string, mins: number) {
 }
 
 export default function ScheduleMeetingModal({ open, onClose, onScheduled }: Props) {
-  const { displayName, setDisplayName } = useStore();
+  const { displayName, setDisplayName, addHostedMeeting } = useStore();
   const [loading, setLoading] = useState(false);
   const [invitee, setInvitee] = useState("");
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -76,13 +76,14 @@ export default function ScheduleMeetingModal({ open, onClose, onScheduled }: Pro
     try {
       const scheduled_time = new Date(`${data.date}T${data.time}`).toISOString();
       setDisplayName(data.host_name);
-      await createScheduledMeeting({
+      const meeting = await createScheduledMeeting({
         title: data.title,
         description: data.description,
         scheduled_time,
         duration_minutes: data.duration_minutes,
         host_name: data.host_name,
       });
+      addHostedMeeting(meeting.meeting_id);
       toast.success("Meeting scheduled!");
       reset();
       onClose();
