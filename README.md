@@ -49,7 +49,7 @@ A full-stack, pixel-perfect clone of the Zoom web application, featuring instant
    - The creator of a meeting receives a "Host tools" dashboard.
    - **Mute All**: Instantly flags all participants as muted in the backend.
    - **Remove**: Kicks participants out of the database session.
-   - **Lock Meeting**: Prevents new users from joining.
+   - **Lock Meeting**: (UI simulation only, not enforced server-side)
 
 ---
 
@@ -59,22 +59,22 @@ The database follows a clean, normalized relational structure using SQLAlchemy:
 
 ### 1. `meetings` Table
 Stores the core data for scheduled and instant meetings.
-- `id` (Integer, Primary Key)
-- `meeting_id` (String, Unique) — *Formatted 9-digit string (e.g., "422-160-861")*
+- `id` (String, UUID, Primary Key)
+- `meeting_id` (String, Unique) — *public 9-digit code, e.g. "823-912-456"*
 - `title` (String)
 - `description` (String, nullable)
-- `start_time` (DateTime)
-- `duration` (Integer) — *Minutes*
-- `host_id` (String) — *Matches the user who created it to grant host controls*
+- `scheduled_time` (DateTime, nullable — null for instant meetings)
+- `duration_minutes` (Integer, nullable)
+- `created_at` / `updated_at` (DateTime)
 
 ### 2. `participants` Table
 Manages active users currently inside a meeting session.
-- `id` (String, Primary Key) — *UUID*
-- `meeting_id` (String, Foreign Key) — *References `meetings.meeting_id`*
+- `id` (String, UUID, Primary Key)
+- `meeting_id` (String, Foreign Key) — *References `meetings.id`*
 - `display_name` (String)
-- `joined_at` (DateTime)
 - `is_host` (Boolean) — *True if the participant created the meeting*
 - `is_muted` (Boolean) — *Toggled by the Host via the "Mute All" control*
+- `joined_at` (DateTime)
 
 ---
 
