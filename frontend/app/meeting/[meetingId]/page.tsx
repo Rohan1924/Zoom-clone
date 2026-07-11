@@ -153,8 +153,9 @@ function ParticipantsPanel({
       const res = await muteAllParticipants(meetingId, hostParticipantId);
       toast.success(`Muted ${res.muted_count} participant${res.muted_count !== 1 ? "s" : ""}`);
       onMutedAll();
-    } catch {
-      toast.error("Failed to mute all");
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      toast.error(status === 403 ? "Only the host can mute all participants" : "Failed to mute all");
     } finally {
       setMuteLoading(false);
     }
@@ -165,8 +166,9 @@ function ParticipantsPanel({
       await removeParticipant(meetingId, p.id, hostParticipantId);
       toast.success(`Removed ${p.display_name}`);
       onRemoved(p.id);
-    } catch {
-      toast.error("Failed to remove participant");
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      toast.error(status === 403 ? "Only the host can remove participants" : "Failed to remove participant");
     }
   };
 
@@ -263,8 +265,9 @@ function HostToolsPanel({
       const res = await muteAllParticipants(meetingId, hostParticipantId);
       toast.success(`🔇 Muted ${res.muted_count} participant${res.muted_count !== 1 ? "s" : ""}`);
       onMutedAll();
-    } catch {
-      toast.error("Failed to mute all");
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      toast.error(status === 403 ? "Only the host can mute all participants" : "Failed to mute all");
     } finally {
       setMuteLoading(false);
     }
@@ -275,8 +278,9 @@ function HostToolsPanel({
       await removeParticipant(meetingId, p.id, hostParticipantId);
       toast.success(`Removed ${p.display_name}`);
       onRemoved(p.id);
-    } catch {
-      toast.error("Failed to remove participant");
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status;
+      toast.error(status === 403 ? "Only the host can remove participants" : "Failed to remove participant");
     }
   };
 
