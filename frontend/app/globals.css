@@ -1,0 +1,176 @@
+/* =========================================================
+   globals.css — Zoom-faithful dark design system
+   ========================================================= */
+
+@import "tailwindcss";
+
+/* ── Zoom-matched colour tokens ──────────────────────────── */
+:root {
+  /* Main backgrounds — Zoom's dark charcoal palette */
+  --z-bg: #1c1c1e;
+  --z-sidebar: #242428;
+  --z-surface: #2a2a2e;
+  --z-surface-2: #323236;
+  --z-surface-hover: #3a3a3e;
+  --z-border: rgba(255,255,255,0.09);
+  --z-border-strong: rgba(255,255,255,0.14);
+
+  /* Text */
+  --z-text: #ffffff;
+  --z-text-muted: rgba(255,255,255,0.55);
+  --z-text-faint: rgba(255,255,255,0.32);
+
+  /* Brand */
+  --z-blue: #1a6fe0;
+  --z-blue-hover: #1560c8;
+  --z-orange: #e86c2b;
+  --z-orange-hover: #d05e22;
+  --z-green: #1bb954;
+  --z-red: #e5484d;
+
+  /* Meeting room */
+  --z-room-bg: #1a1a1d;
+  --z-room-tile: #242428;
+  --z-room-bar: #1a1a1d;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto,
+    Helvetica, Arial, sans-serif;
+
+  --shadow-modal: 0 32px 80px rgba(0,0,0,0.7);
+  --shadow-card: 0 2px 12px rgba(0,0,0,0.4);
+}
+
+/* ── Reset ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--z-bg);
+  color: var(--z-text);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  margin: 0;
+  min-height: 100vh;
+}
+
+:focus-visible {
+  outline: 2px solid var(--z-blue);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Zoom-style input ────────────────────────────────────── */
+.z-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--z-border-strong);
+  background: var(--z-surface);
+  color: var(--z-text);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.z-input::placeholder { color: var(--z-text-faint); }
+.z-input:focus { border-color: var(--z-blue); }
+
+/* ── Zoom-style textarea ─────────────────────────────────── */
+.z-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--z-border-strong);
+  background: var(--z-surface);
+  color: var(--z-text);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.15s;
+}
+.z-textarea::placeholder { color: var(--z-text-faint); }
+.z-textarea:focus { border-color: var(--z-blue); }
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn-blue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: var(--z-blue);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-blue:hover { background: var(--z-blue-hover); }
+.btn-blue:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: var(--z-red);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-danger:hover { background: #cc3338; }
+
+/* ── Meeting room toolbar button ─────────────────────────── */
+.toolbar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.07);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+  font-size: 11px;
+  font-family: var(--font-sans);
+  transition: background 0.15s;
+}
+.toolbar-btn:hover { background: rgba(255,255,255,0.13); }
+.toolbar-btn.danger {
+  background: rgba(229,72,77,0.18);
+  border-color: rgba(229,72,77,0.35);
+  color: #ff8a8d;
+}
+.toolbar-btn.danger:hover { background: rgba(229,72,77,0.3); }
+
+/* ── Meeting room layout ─────────────────────────────────── */
+.room-grid {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 12px;
+  padding: 12px;
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .room-grid { grid-template-columns: 1fr; }
+}
