@@ -17,10 +17,15 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [tab, setTab] = useState<"signin" | "signup">("signin");
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   // Already logged in → redirect to dashboard
   useEffect(() => {
-    if (isAuthenticated) router.replace("/");
-  }, [isAuthenticated, router]);
+    if (mounted && isAuthenticated) router.replace("/");
+  }, [mounted, isAuthenticated, router]);
+
+  if (!mounted) return null; // Avoid hydration mismatch on initial render
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

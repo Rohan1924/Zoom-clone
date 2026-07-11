@@ -317,10 +317,14 @@ export default function DashboardPage() {
   const [tab, setTab] = useState<"upcoming" | "recent">("upcoming");
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
+  // Wait for Zustand hydration to finish before redirecting
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   // Auth guard — redirect to login if not authenticated
   useEffect(() => {
-    if (!isAuthenticated) router.replace("/login");
-  }, [isAuthenticated, router]);
+    if (mounted && !isAuthenticated) router.replace("/login");
+  }, [mounted, isAuthenticated, router]);
 
   useEffect(() => {
     fetchMeetings();
@@ -335,7 +339,7 @@ export default function DashboardPage() {
     router.replace("/login");
   };
 
-  if (!isAuthenticated) return null; // avoid flash before redirect
+  if (!mounted || !isAuthenticated) return null; // avoid flash before redirect
 
   const allMeetings =
     tab === "upcoming" ? upcomingMeetings : recentMeetings;
