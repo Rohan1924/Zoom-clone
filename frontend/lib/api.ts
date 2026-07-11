@@ -67,12 +67,24 @@ export async function getMeetingParticipants(
   return data;
 }
 
-export async function muteAllParticipants(meetingId: string): Promise<{ muted_count: number }> {
-  const { data } = await api.post<{ muted_count: number }>(`/meetings/${meetingId}/mute-all`);
+export async function muteAllParticipants(
+  meetingId: string,
+  hostParticipantId: string
+): Promise<{ muted_count: number }> {
+  const { data } = await api.post<{ muted_count: number }>(
+    `/meetings/${meetingId}/mute-all`,
+    { host_participant_id: hostParticipantId }
+  );
   return data;
 }
 
-export async function removeParticipant(meetingId: string, participantId: string): Promise<void> {
-  await api.post(`/meetings/${meetingId}/remove/${participantId}`);
+export async function removeParticipant(
+  meetingId: string,
+  participantId: string,
+  hostParticipantId: string
+): Promise<void> {
+  await api.post(`/meetings/${meetingId}/remove/${participantId}`, {
+    host_participant_id: hostParticipantId,
+  });
 }
 

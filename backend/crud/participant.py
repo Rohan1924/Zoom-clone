@@ -26,6 +26,18 @@ def list_for_meeting(db: Session, meeting: models.Meeting) -> List[models.Partic
     )
 
 
+def is_meeting_host(db: Session, meeting: models.Meeting, participant_id: str) -> bool:
+    """True only if participant_id belongs to a participant of THIS meeting who is host."""
+    participant = (
+        db.query(models.Participant)
+        .filter(
+            models.Participant.id == participant_id,
+            models.Participant.meeting_id == meeting.id,
+        )
+        .first()
+    )
+    return participant is not None and participant.is_host
+
 def mute_all(db: Session, meeting: models.Meeting) -> int:
     """Mute all non-host participants. Returns count of muted participants."""
     participants = (

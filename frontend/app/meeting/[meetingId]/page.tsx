@@ -133,13 +133,14 @@ function TBtn({ icon, label, onClick, danger, active, withCaret, disabled }: { i
 
 /* ─── Participants Panel ───────────────────────────────────── */
 function ParticipantsPanel({
-  participants, loading, meetingId, isHost, currentUser, onClose, onMutedAll, onRemoved,
+  participants, loading, meetingId, isHost, currentUser, hostParticipantId, onClose, onMutedAll, onRemoved,
 }: {
   participants: Participant[];
   loading: boolean;
   meetingId: string;
   isHost: boolean;
   currentUser: string;
+  hostParticipantId: string;
   onClose: () => void;
   onMutedAll: () => void;
   onRemoved: (id: string) => void;
@@ -149,7 +150,7 @@ function ParticipantsPanel({
   const handleMuteAll = async () => {
     setMuteLoading(true);
     try {
-      const res = await muteAllParticipants(meetingId);
+      const res = await muteAllParticipants(meetingId, hostParticipantId);
       toast.success(`Muted ${res.muted_count} participant${res.muted_count !== 1 ? "s" : ""}`);
       onMutedAll();
     } catch {
@@ -161,7 +162,7 @@ function ParticipantsPanel({
 
   const handleRemove = async (p: Participant) => {
     try {
-      await removeParticipant(meetingId, p.id);
+      await removeParticipant(meetingId, p.id, hostParticipantId);
       toast.success(`Removed ${p.display_name}`);
       onRemoved(p.id);
     } catch {
@@ -243,11 +244,12 @@ function ParticipantsPanel({
 
 /* ─── Host Tools Panel ─────────────────────────────────────── */
 function HostToolsPanel({
-  meetingId, participants, currentUser, onClose, onMutedAll, onRemoved,
+  meetingId, participants, currentUser, hostParticipantId, onClose, onMutedAll, onRemoved,
 }: {
   meetingId: string;
   participants: Participant[];
   currentUser: string;
+  hostParticipantId: string;
   onClose: () => void;
   onMutedAll: () => void;
   onRemoved: (id: string) => void;
@@ -258,7 +260,7 @@ function HostToolsPanel({
   const handleMuteAll = async () => {
     setMuteLoading(true);
     try {
-      const res = await muteAllParticipants(meetingId);
+      const res = await muteAllParticipants(meetingId, hostParticipantId);
       toast.success(`🔇 Muted ${res.muted_count} participant${res.muted_count !== 1 ? "s" : ""}`);
       onMutedAll();
     } catch {
@@ -270,7 +272,7 @@ function HostToolsPanel({
 
   const handleRemove = async (p: Participant) => {
     try {
-      await removeParticipant(meetingId, p.id);
+      await removeParticipant(meetingId, p.id, hostParticipantId);
       toast.success(`Removed ${p.display_name}`);
       onRemoved(p.id);
     } catch {
@@ -504,6 +506,7 @@ function MeetingRoom({ meeting, joinedName }: { meeting: Meeting; joinedName: st
             meetingId={meeting.meeting_id}
             isHost={isHost}
             currentUser={joinedName}
+            hostParticipantId={currentUserData?.id ?? ""}
             onClose={() => setShowParticipants(false)}
             onMutedAll={fetchParticipants}
             onRemoved={(id) => setParticipants(ps => ps.filter(p => p.id !== id))}
@@ -518,6 +521,7 @@ function MeetingRoom({ meeting, joinedName }: { meeting: Meeting; joinedName: st
             meetingId={meeting.meeting_id}
             participants={participants}
             currentUser={joinedName}
+            hostParticipantId={currentUserData?.id ?? ""}
             onClose={() => setShowHostTools(false)}
             onMutedAll={fetchParticipants}
             onRemoved={(id) => setParticipants(ps => ps.filter(p => p.id !== id))}

@@ -22,6 +22,11 @@ class MeetingCreateSchedule(BaseModel):
 class JoinMeetingRequest(BaseModel):
     display_name: str = Field(min_length=1, max_length=50)
 
+class HostAction(BaseModel):
+    host_participant_id: str = Field(
+        ..., description="Caller's own participant_id, verified server-side against is_host"
+    )
+
 
 # ---------- Responses ----------
 

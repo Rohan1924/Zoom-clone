@@ -42,11 +42,20 @@ def list_participants(meeting_id: str, db: Session = Depends(get_db)):
 
 
 @router.post("/mute-all", response_model=schemas.MuteAllResponse)
-def mute_all_participants(meeting_id: str, db: Session = Depends(get_db)):
-    """Host control: mark all non-host participants as muted."""
+def mute_all_participants(
+    meeting_id: str,
+    payload: schemas.HostAction,
+    db: Session = Depends(get_db),
+):
+    """Host control: mark all non-host participants as muted.
+    Requires the caller's own participant_id so we verify server-side
+    they're actually the host, not just trusting the frontend to hide the button."""
     meeting = meeting_crud.get_by_meeting_id(db, meeting_id)
     if meeting is None:
         raise HTTPException(status_code=404, detail="Meeting not found")
+
+    if not participant_crud.is_meeting_host(db, meeting, payload.host_participant_id):
+        raise HTTPException(status_code=403, detail="Only the host can mute all participants")
 
     count = participant_crud.mute_all(db, meeting)
     return schemas.MuteAllResponse(muted_count=count)
@@ -56,11 +65,15 @@ def mute_all_participants(meeting_id: str, db: Session = Depends(get_db)):
 def remove_participant(
     meeting_id: str,
     participant_id: str,
+    payload: schemas.HostAction,
     db: Session = Depends(get_db),
 ):
-    """Host control: remove a participant from the meeting."""
+    """Host control: remove a participant. Same host verification as mute-all."""
     meeting = meeting_crud.get_by_meeting_id(db, meeting_id)
     if meeting is None:
         raise HTTPException(status_code=404, detail="Meeting not found")
+
+    if not participant_crud.is_meeting_host(db, meeting, payload.host_participant_id):
+        raise HTTPException(status_code=403, detail="Only the host can remove participants")
 
     participant_crud.remove_participant(db, meeting, participant_id)
